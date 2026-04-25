@@ -1,1 +1,17 @@
-{}
+{
+  "hosting": {
+    "target": "flux",
+    "public": "dist/flux/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

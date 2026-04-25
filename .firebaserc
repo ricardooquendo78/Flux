@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "flux-888"
+  },
+  "targets": {
+    "flux-888": {
+      "hosting": {
+        "flux": [
+          "flux-888"
+        ]
+      }
+    }
   }
 }

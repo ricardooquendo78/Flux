@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Flux": {
+    "flux": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "outputPath": "dist/flux",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
@@ -33,13 +34,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "15kB",
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all"
@@ -56,10 +57,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Flux:build:production"
+              "buildTarget": "flux:build:production"
             },
             "development": {
-              "buildTarget": "Flux:build:development"
+              "buildTarget": "flux:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -84,6 +85,14 @@
             "styles": [
               "src/styles.css"
             ]
+          }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "version": 2,
+            "buildTarget": "flux:build:production",
+            "site": "flux-888"
           }
         }
       }
