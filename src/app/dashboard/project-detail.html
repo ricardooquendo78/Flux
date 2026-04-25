@@ -1,0 +1,363 @@
+<!-- MODAL TAREA COMÚN (Fuera del contenedor para evitar conflictos de scroll/animación) -->
+@if (showCommonTaskModal()) {
+  <div class="modal-overlay" (click)="showCommonTaskModal.set(false)">
+    <div class="glass-card modal-content common-modal" (click)="$event.stopPropagation()">
+      <h3>Nueva Tarea Común 🌍</h3>
+      <p>Esta tarea y sus actividades se añadirán a **todas** las {{ project().divisionType }}.</p>
+      
+      <div class="modal-form-body">
+        <div class="form-group">
+          <label>Nombre de la Tarea</label>
+          <input type="text" [(ngModel)]="commonTaskName" placeholder="Ej: Pintura General, Limpieza...">
+        </div>
+
+        <div class="form-group">
+          <label>Actividades a incluir (Checklist)</label>
+          <div class="activity-input-row">
+            <input type="text" [(ngModel)]="newCommonActivity" placeholder="Nueva actividad..." (keyup.enter)="addActivityToCommon()">
+            <button class="btn-icon-small" (click)="addActivityToCommon()">+</button>
+          </div>
+          
+          <div class="common-activities-list">
+            @for (act of commonActivities(); track $index) {
+              <div class="common-activity-tag">
+                <span>{{ act }}</span>
+                <button (click)="removeActivityFromCommon($index)">&times;</button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="showCommonTaskModal.set(false)">Cancelar</button>
+        <button class="btn-primary" (click)="addCommonTask()" [disabled]="!commonTaskName()">
+          Crear en todas las {{ project().divisionType }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="detail-container animate-fade">
+  @if (loading()) {
+    <div class="loader">Cargando proyecto...</div>
+  } @else if (project()) {
+    <header class="detail-header sticky-header">
+      <!-- ... -->
+      <div class="header-content compact-nav">
+        <div class="nav-left">
+          <button routerLink="/home" class="mini-back-btn" title="Volver">←</button>
+          <h1 class="mini-title">{{ project().name }}</h1>
+        </div>
+        
+        <div class="header-center-actions">
+          <button class="btn-theme-mini" (click)="themeService.toggleTheme()" [title]="themeService.isDark() ? 'Modo Claro' : 'Modo Oscuro'">
+            {{ themeService.isDark() ? '☀️' : '🌙' }}
+          </button>
+          <button routerLink="/profile" class="btn-icon-nav-mini" title="Configurar Empresa">⚙️</button>
+        </div>
+        
+        <div class="header-tabs mini-tabs">
+          <button [class.active]="activeTab() === 'structure'" (click)="activeTab.set('structure'); selectedDivision.set(null)">Zonas</button>
+          <button [class.active]="activeTab() === 'summary'" (click)="activeTab.set('summary'); selectedDivision.set(null)">Resumen</button>
+        </div>
+
+        <div class="nav-right">
+          @if (!showSetup() && !selectedDivision()) {
+            <button class="btn-mini-action" (click)="showCommonTaskModal.set(true)">
+              🌍 <span class="hide-mobile">+ Tarea Común</span>
+            </button>
+          }
+        </div>
+      </div>
+    </header>
+
+    <main class="detail-main">
+      @if (showSetup()) {
+        <!-- ... (Setup section same as before) ... -->
+        <section class="setup-section glass-card animate-fade">
+          <h2>Configura tu Estructura</h2>
+          <p>¿Cómo quieres dividir este proyecto para organizar las tareas?</p>
+          <div class="setup-form">
+            <div class="form-group">
+              <label>Tipo de División</label>
+              <select [(ngModel)]="divisionType">
+                <option value="Zonas">Zonas</option>
+                <option value="Lugares">Lugares</option>
+                <option value="Espacios">Espacios</option>
+                <option value="Tareas">Tareas (Fases)</option>
+                <option value="Personas">Personas (Responsables)</option>
+              </select>
+            </div>
+            <button class="btn-primary" (click)="saveStructure()">Comenzar con {{ divisionType() }}</button>
+          </div>
+        </section>
+      } @else if (activeTab() === 'summary') {
+        <!-- VISTA DE RESUMEN SIMPLIFICADA -->
+        <section class="summary-view animate-fade">
+          <div class="summary-header">
+            <div class="summary-title-row">
+              <h2>Pendientes por {{ project().divisionType }}</h2>
+              <div class="export-actions">
+                <button class="btn-export obs" (click)="showObservationModal.set(true)">📝 Observación</button>
+                <button class="btn-export pdf" (click)="exportPDF()">📄 PDF</button>
+                <button class="btn-export excel" (click)="exportExcel()">📊 Excel</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-list">
+            @for (div of getPendingTasksByDivision(); track div.id) {
+              <div class="glass-card summary-item division-summary">
+                <div class="summary-item-header">
+                  <span class="loc-name">{{ div.name }}</span>
+                  <span class="pending-count">{{ div.pendingTasks.length }} tareas con pendientes</span>
+                </div>
+
+                <div class="pending-compact-list">
+                  @for (task of div.pendingTasks; track task.id) {
+                    <div class="task-group">
+                      <span class="task-mini-name">{{ task.name }}</span>
+                      <div class="compact-checks">
+                        @for (item of task.items; track $index) {
+                          @if (!item.completed) {
+                            <div class="pending-check">
+                              <span class="bullet">○</span>
+                              <span class="item-name-summary">{{ item.name }}</span>
+                              <button class="go-to-btn" (click)="goToDivision(div.id)" title="Ir a la actividad">></button>
+                            </div>
+                          }
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-summary">
+                <div class="success-icon">🎉</div>
+                <h3>¡Excelente trabajo!</h3>
+                <p>No hay actividades pendientes en ninguna zona.</p>
+              </div>
+            }
+          </div>
+        </section>
+      } @else if (!selectedDivision()) {
+        <!-- VISTA DE DIVISIONES -->
+        <section class="progress-section glass-card">
+          <div class="progress-info">
+            <span>Progreso General</span>
+            <span class="percentage">{{ calculateTotalProgress() }}%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-fill" [style.width.%]="calculateTotalProgress()"></div>
+          </div>
+        </section>
+
+        <section class="divisions-grid">
+          <div class="section-title"><h3>{{ project().divisionType }} del Proyecto</h3></div>
+          <div class="divisions-list">
+            @for (div of divisions(); track div.id) {
+              <div class="glass-card division-card" (click)="selectDivision(div)">
+                <div class="div-header">
+                  <div class="div-info">
+                    <h4>{{ div.name }}</h4>
+                    <span class="mini-status">{{ div.progress || 0 }}%</span>
+                  </div>
+                  <div class="div-photos">
+                    <button class="btn-add-task-mini" (click)="openAddTaskModal(div.id, $event)" title="Añadir Tarea">+ Tarea</button>
+                    
+                    <div class="btn-photo" [class.done]="div.beforeImage" (click)="openPhotoSource(div.id, 'before', $event)" title="Foto del Antes">
+                      {{ div.beforeImage ? '✓' : 'A' }}
+                    </div>
+
+                    <div class="btn-photo" [class.done]="div.afterImage" (click)="openPhotoSource(div.id, 'after', $event)" title="Foto del Después">
+                      {{ div.afterImage ? '✓' : 'D' }}
+                    </div>
+                  </div>
+                </div>
+                <div class="mini-bar">
+                  <div class="mini-fill" [style.width.%]="div.progress || 0"></div>
+                </div>
+              </div>
+            }
+            <div class="add-division-card glass-card">
+              <input type="text" [(ngModel)]="newDivisionName" [placeholder]="'Añadir ' + project().divisionType + '...'" (keyup.enter)="addDivision()">
+              <button class="btn-icon" (click)="addDivision()">+</button>
+            </div>
+          </div>
+        </section>
+      } @else {
+        <!-- VISTA DE TAREAS DE UNA DIVISIÓN -->
+        <section class="tasks-view animate-fade">
+          <div class="tasks-header">
+            <button class="back-link" (click)="selectedDivision.set(null)">← Volver a {{ project().divisionType }}</button>
+            <div class="tasks-header-main">
+              <h2>{{ selectedDivision().name }}</h2>
+              <button class="btn-primary btn-add-task-inline" (click)="openAddTaskModal(selectedDivision().id, $event)">+ Añadir Tarea</button>
+            </div>
+          </div>
+
+          <div class="tasks-container">
+            <div class="tasks-list">
+              @for (task of tasks(); track task.id) {
+                <div class="glass-card task-item" [class.common]="task.isCommon" [class.completed]="task.completed">
+                  <div class="task-main">
+                    <div class="task-info">
+                      @if (task.isCommon) { <span class="common-tag">Común</span> }
+                      <h4>{{ task.name }}</h4>
+                    </div>
+                    <div class="task-right">
+                      <div class="task-progress">{{ getTaskProgress(task) }}%</div>
+                      <button class="delete-task" (click)="removeTask(task.id)">&times;</button>
+                    </div>
+                  </div>
+
+                  <div class="mini-bar task-mini-bar">
+                    <div class="mini-fill" [style.width.%]="getTaskProgress(task)"></div>
+                  </div>
+                  
+                  <div class="task-checklist">
+                    @for (item of task.items; track $index) {
+                      <div class="check-item-row">
+                        <div class="check-item" (click)="toggleItem(task, $index)">
+                          <div class="checkbox" [class.checked]="item.completed">
+                            @if (item.completed) { <span>✓</span> }
+                          </div>
+                          <span class="item-name" [class.line-through]="item.completed">{{ item.name }}</span>
+                        </div>
+                        <button class="remove-item" (click)="removeTaskItem(task, $index, $event)">&times;</button>
+                      </div>
+                    }
+                    
+                    <div class="add-item-row">
+                      <input #itemInput type="text" placeholder="Nueva actividad..." (keyup.enter)="addTaskItem(task, itemInput.value); itemInput.value = ''">
+                      <button (click)="addTaskItem(task, itemInput.value); itemInput.value = ''">+</button>
+                    </div>
+                  </div>
+                </div>
+              } @empty {
+                <div class="empty-tasks">No hay tareas aún. Añade una tarea individual o una común.</div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+    </main>
+  } @else {
+    <div class="error-state">
+      <h2>Proyecto no encontrado</h2>
+      <button routerLink="/home" class="btn-primary">Volver al Dashboard</button>
+    </div>
+  }
+</div>
+
+<!-- MODAL SELECTOR DE FUENTE DE FOTO -->
+@if (showPhotoSourceModal()) {
+  <div class="modal-overlay" (click)="showPhotoSourceModal.set(false)">
+    <div class="glass-card photo-source-modal animate-up" (click)="$event.stopPropagation()">
+      <h3>¿Cómo quieres subir la foto?</h3>
+      <p>Selecciona la fuente de la imagen para el {{ pendingPhotoData()?.type === 'before' ? 'Antes' : 'Después' }}</p>
+      
+      <div class="source-options">
+        <label class="source-btn">
+          <input type="file" hidden capture="environment" accept="image/*" (change)="handlePhotoUpload($event)">
+          <span class="icon">📸</span>
+          <span class="label">Cámara</span>
+        </label>
+
+        <label class="source-btn">
+          <input type="file" hidden accept="image/*" (change)="handlePhotoUpload($event)">
+          <span class="icon">🖼️</span>
+          <span class="label">Galería</span>
+        </label>
+      </div>
+
+      <button class="btn-cancel-modal" (click)="showPhotoSourceModal.set(false)">Cancelar</button>
+    </div>
+  </div>
+}
+
+<!-- MODAL OBSERVACIONES CENTRALIZADO -->
+@if (showObservationModal()) {
+  <div class="modal-overlay" (click)="showObservationModal.set(false)">
+    <div class="glass-card observation-modal animate-up" (click)="$event.stopPropagation()">
+      <div class="modal-header-flux">
+        <h3>{{ selectedTaskForObs() ? 'Editar Observación' : 'Añadir Observación' }}</h3>
+        <p>Las notas aparecerán bajo cada zona en el reporte PDF.</p>
+      </div>
+
+      <div class="form-body-flux">
+        <div class="form-group-flux">
+          <label>Seleccionar Tarea</label>
+          <select [ngModel]="selectedTaskForObs()" (ngModelChange)="selectedTaskForObs.set($event); observationText.set($event?.observation || '')" class="flux-select">
+            <option [ngValue]="null">-- Elige una actividad --</option>
+            @for (div of divisions(); track div.id) {
+              <optgroup [label]="div.name">
+                @for (task of allTasks(); track task.id) {
+                  @if (task.divisionId === div.id) {
+                    <option [ngValue]="task">{{ task.name }}</option>
+                  }
+                }
+              </optgroup>
+            }
+          </select>
+        </div>
+
+        <div class="form-group-flux">
+          <label>Observación Detallada</label>
+          <textarea 
+            [(ngModel)]="observationText" 
+            placeholder="Ej: Se detectó humedad en la base, se requiere refuerzo..."
+            rows="4"
+            class="flux-textarea"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer-flux">
+        <button class="btn-cancel-modal" (click)="showObservationModal.set(false)">Cancelar</button>
+        <button class="btn-primary" (click)="saveCentralizedObservation()" [disabled]="!selectedTaskForObs() || !observationText()">
+          Guardar Nota
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL AÑADIR TAREA INDIVIDUAL -->
+@if (showAddTaskModal()) {
+  <div class="modal-overlay" (click)="showAddTaskModal.set(false)">
+    <div class="glass-card auth-card animate-up" (click)="$event.stopPropagation()">
+      <div class="modal-header-flux">
+        <h3>Añadir Tarea Individual</h3>
+        <p>Añade una tarea específica para esta zona.</p>
+      </div>
+
+      <div class="form-body-flux">
+        <div class="form-group-flux">
+          <label>Nombre de la Tarea</label>
+          <input [(ngModel)]="newTaskName" placeholder="Ej: Pintura de vigas" class="flux-select">
+        </div>
+
+        <div class="form-group-flux">
+          <label>Actividades (separadas por comas)</label>
+          <textarea 
+            [(ngModel)]="newTaskActivities" 
+            placeholder="Ej: Lijado, Imprimación, Capa final"
+            rows="3"
+            class="flux-textarea"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer-flux">
+        <button class="btn-cancel-modal" (click)="showAddTaskModal.set(false)">Cancelar</button>
+        <button class="btn-primary" (click)="saveIndividualTask()" [disabled]="!newTaskName() || !newTaskActivities()">
+          Añadir Tarea
+        </button>
+      </div>
+    </div>
+  </div>
+}

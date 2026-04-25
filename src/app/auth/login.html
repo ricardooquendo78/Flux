@@ -1,0 +1,51 @@
+<div class="auth-container animate-fade">
+  <div class="glass-card auth-card">
+    <div class="auth-header">
+      <h1 class="brand">FLUX</h1>
+      <p class="subtitle">Gestiona tus proyectos con fluidez</p>
+    </div>
+
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input 
+          type="email" 
+          name="email" 
+          [(ngModel)]="credentials.email" 
+          placeholder="nombre@ejemplo.com" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña (4 dígitos)</label>
+        <input 
+          type="password" 
+          name="password" 
+          [(ngModel)]="credentials.password" 
+          placeholder="••••" 
+          maxlength="4"
+          pattern="[0-9]{4}"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn-primary w-full" [disabled]="!loginForm.valid">
+        Entrar
+      </button>
+
+      <div class="divider">
+        <span>O también</span>
+      </div>
+
+      <button type="button" class="btn-google w-full" (click)="loginWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Entrar con Google
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>¿No tienes cuenta? <a routerLink="/register">Regístrate aquí</a></p>
+    </div>
+  </div>
+</div>

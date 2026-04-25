@@ -1,0 +1,73 @@
+<div class="auth-container animate-fade">
+  <div class="glass-card auth-card">
+    <div class="auth-header">
+      <h1 class="brand">UNIRSE A FLUX</h1>
+      <p class="subtitle">Comienza a organizar tus proyectos hoy</p>
+    </div>
+
+    <form (ngSubmit)="onRegister()" #registerForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label>Nombre (Empresa o Persona)</label>
+        <input 
+          type="text" 
+          name="name" 
+          [(ngModel)]="user.name" 
+          placeholder="Ej: Constructora S.A. o Juan Pérez" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input 
+          type="email" 
+          name="email" 
+          [(ngModel)]="user.email" 
+          placeholder="correo@ejemplo.com" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input 
+          type="tel" 
+          name="phone" 
+          [(ngModel)]="user.phone" 
+          placeholder="+57 300..." 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña (4 dígitos)</label>
+        <input 
+          type="password" 
+          name="password" 
+          [(ngModel)]="user.password" 
+          placeholder="••••" 
+          maxlength="4"
+          pattern="[0-9]{4}"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn-primary w-full" [disabled]="!registerForm.valid">
+        Crear Cuenta
+      </button>
+
+      <div class="divider">
+        <span>O también</span>
+      </div>
+
+      <button type="button" class="btn-google w-full" (click) = "loginWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Registrarse con Google
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </div>
+  </div>
+</div>

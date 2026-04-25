@@ -1,0 +1,82 @@
+<div class="profile-container animate-fade">
+  <header class="profile-header">
+    <div class="header-content">
+      <button routerLink="/home" class="back-btn">← Dashboard</button>
+      <h1>Mi Perfil y Empresa</h1>
+    </div>
+  </header>
+
+  <main class="profile-main">
+    <div class="glass-card profile-card">
+      <div class="profile-section">
+        <h3>Datos Personales</h3>
+        <div class="form-group">
+          <label>Nombre Completo</label>
+          <input type="text" [(ngModel)]="profile().name" placeholder="Tu nombre...">
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h3>Información de la Empresa</h3>
+        <p class="section-hint">Estos datos aparecerán en los encabezados de tus reportes.</p>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombre de la Empresa</label>
+            <input type="text" [(ngModel)]="profile().companyName" placeholder="Nombre comercial...">
+          </div>
+          <div class="form-group">
+            <label>NIT / Identificación Fiscal</label>
+            <input type="text" [(ngModel)]="profile().nit" placeholder="Ej: 900.123.456-1">
+          </div>
+        </div>
+
+        <div class="logo-upload-section">
+          <label>Logo de la Empresa</label>
+          <div class="logo-preview-container">
+            @if (profile().logoUrl) {
+              <img [src]="profile().logoUrl" alt="Logo Empresa" class="logo-preview">
+            } @else {
+              <div class="logo-placeholder">Sin Logo</div>
+            }
+            <div class="upload-controls">
+              <button class="btn-secondary small" (click)="showPhotoSourceModal.set(true)">Cambiar Logo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-footer">
+        <button class="btn-primary" (click)="saveProfile()" [disabled]="saving()">
+          {{ saving() ? 'Guardando...' : 'Guardar Cambios' }}
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL SELECTOR DE FUENTE DE FOTO -->
+  @if (showPhotoSourceModal()) {
+    <div class="modal-overlay" (click)="showPhotoSourceModal.set(false)">
+      <div class="glass-card photo-source-modal animate-up" (click)="$event.stopPropagation()">
+        <h3>¿Cómo quieres subir tu logo?</h3>
+        <p>Soporta archivos de más de 1MB</p>
+        
+        <div class="source-options">
+          <label class="source-btn">
+            <input type="file" hidden capture="environment" accept="image/*" (change)="onLogoUpload($event)">
+            <span class="icon">📸</span>
+            <span class="label">Cámara</span>
+          </label>
+
+          <label class="source-btn">
+            <input type="file" hidden accept="image/*" (change)="onLogoUpload($event)">
+            <span class="icon">🖼️</span>
+            <span class="label">Galería</span>
+          </label>
+        </div>
+
+        <button class="btn-cancel-modal" (click)="showPhotoSourceModal.set(false)">Cancelar</button>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,118 @@
+.profile-container {
+  min-height: 100vh;
+  background: var(--bg-dark);
+}
+
+.profile-header {
+  padding: 2rem 1rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.back-btn {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  padding: 8px 16px;
+  border-radius: 10px;
+}
+
+.profile-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem 5rem;
+}
+
+.profile-card {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profile-section h3 {
+  color: var(--primary);
+  font-size: 1.2rem;
+  margin: 0;
+  border-left: 4px solid var(--primary);
+  padding-left: 1rem;
+}
+
+.section-hint {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: -0.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.logo-preview-container {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1.5rem;
+  border-radius: 15px;
+  border: 1px dashed var(--glass-border);
+}
+
+.logo-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: white;
+  padding: 5px;
+}
+
+.logo-placeholder {
+  width: 100px;
+  height: 100px;
+  background: var(--glass-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.profile-footer {
+  padding-top: 2rem;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .logo-preview-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}

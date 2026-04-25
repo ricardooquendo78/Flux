@@ -1,0 +1,91 @@
+<div class="dashboard-container animate-fade">
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="brand-small">FLUX</h1>
+      <div class="user-profile">
+        <span>Hola, <strong>{{ getFirstName(profile()?.name || user()?.displayName) }}</strong></span>
+        <button class="btn-theme" (click)="themeService.toggleTheme()" [title]="themeService.isDark() ? 'Modo Claro' : 'Modo Oscuro'">
+          {{ themeService.isDark() ? '☀️' : '🌙' }}
+        </button>
+        <button routerLink="/profile" class="btn-icon-nav" title="Configurar Empresa">⚙️</button>
+        <div class="avatar" (click)="logout()" title="Cerrar sesión">
+          @if (profile()?.logoUrl || user()?.photoURL) {
+            <img [src]="profile()?.logoUrl || user()?.photoURL" alt="User" class="avatar-img">
+          }
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="section-header">
+      <div class="title-row">
+        <h2>Mis Proyectos</h2>
+      </div>
+      <p class="section-subtitle">Gestiona y supervisa tus actividades</p>
+    </div>
+
+    <div class="projects-grid">
+      @for (project of projects(); track project.id) {
+        <div class="glass-card project-card">
+          <div class="project-header">
+            <span class="status-badge" [ngClass]="getStatusClass(project.status)">
+              {{ project.status }}
+            </span>
+            <button class="delete-icon" (click)="deleteProject(project.id)" title="Eliminar">&times;</button>
+          </div>
+          <h3 class="project-title">{{ project.name }}</h3>
+          <p class="project-desc">{{ project.description }}</p>
+          <div class="project-footer">
+            <button class="btn-text" [routerLink]="['/project', project.id]">Ver Detalles</button>
+          </div>
+        </div>
+      }
+
+      <div class="add-project-card" (click)="openModal()">
+        <div class="plus-icon">+</div>
+        <span>Nuevo Proyecto</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal de Nuevo Proyecto -->
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="glass-card modal-content animate-fade" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Nuevo Proyecto</h3>
+          <button class="close-btn" (click)="closeModal()">&times;</button>
+        </div>
+        
+        <form (ngSubmit)="saveProject()" #projectForm="ngForm" class="modal-form">
+          <div class="form-group">
+            <label>Nombre del Proyecto</label>
+            <input 
+              type="text" 
+              name="name" 
+              [(ngModel)]="newProject.name" 
+              placeholder="Ej: Reforma Cocina" 
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea 
+              name="description" 
+              [(ngModel)]="newProject.description" 
+              placeholder="Detalles del trabajo..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-primary" [disabled]="!projectForm.valid">Crear Proyecto</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>
