@@ -527,6 +527,8 @@ textarea:focus {
   padding: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .division-card:hover {
@@ -539,6 +541,41 @@ textarea:focus {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.div-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.delete-division {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s;
+  line-height: 1;
+  opacity: 0.3;
+  z-index: 10;
+}
+
+.delete-division:hover {
+  opacity: 1;
+  color: #ef4444;
+  transform: scale(1.2);
 }
 
 .div-info {

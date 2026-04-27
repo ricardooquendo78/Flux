@@ -160,14 +160,13 @@
           <div class="divisions-list">
             @for (div of divisions(); track div.id) {
               <div class="glass-card division-card" (click)="selectDivision(div)">
+                <button class="delete-division" (click)="removeDivision(div.id, $event)" title="Eliminar">&times;</button>
                 <div class="div-header">
                   <div class="div-info">
                     <h4>{{ div.name }}</h4>
                     <span class="mini-status">{{ div.progress || 0 }}%</span>
                   </div>
                   <div class="div-photos">
-                    <button class="btn-add-task-mini" (click)="openAddTaskModal(div.id, $event)" title="Añadir Tarea">+ Tarea</button>
-                    
                     <div class="btn-photo" [class.done]="div.beforeImage" (click)="openPhotoSource(div.id, 'before', $event)" title="Foto del Antes">
                       {{ div.beforeImage ? '✓' : 'A' }}
                     </div>

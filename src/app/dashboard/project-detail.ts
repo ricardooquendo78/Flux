@@ -333,6 +333,18 @@ export class ProjectDetailComponent {
     }
   }
 
+  async removeDivision(divisionId: string, event: Event) {
+    event.stopPropagation();
+    if (!confirm(`¿Estás seguro de que quieres eliminar esta ${this.project().divisionType}? Se perderán todas sus tareas.`)) return;
+
+    const currentUser = this.user();
+    const projectId = this.project()?.id;
+    if (currentUser && projectId) {
+      await this.firebaseService.deleteDivision(currentUser.uid, projectId, divisionId);
+      this.refreshProjectStatus();
+    }
+  }
+
   async saveCentralizedObservation() {
     const task = this.selectedTaskForObs();
     const text = this.observationText();

@@ -140,6 +140,11 @@ export class FirebaseService {
     return deleteDoc(taskRef);
   }
 
+  async deleteDivision(userId: string, projectId: string, divisionId: string) {
+    const divRef = doc(this.firestore, `users/${userId}/projects/${projectId}/divisions/${divisionId}`);
+    return deleteDoc(divRef);
+  }
+
   async addProject(userId: string, project: any) {
     const projectsRef = collection(this.firestore, `users/${userId}/projects`);
     return addDoc(projectsRef, {
