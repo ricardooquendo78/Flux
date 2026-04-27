@@ -19,11 +19,25 @@
   justify-content: space-between;
   align-items: center;
 }
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.4));
+}
+
 .brand-small {
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: 2px;
   color: white;
+  margin: 0;
 }
 .user-profile {
   display: flex;
